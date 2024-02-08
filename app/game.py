@@ -1,16 +1,24 @@
+import os
+
 from app.board import Board
-import pytest
+from app.player import Player
 
 
 class Game:
     def __init__(self):
         self.board = Board()
-        self.current_player = "X"
+        self.players = [Player("X"), Player("O")]
+        self.current_player_index = 0
+        self.starting_player_index = 0
         self.winner = None
         self.is_game_over = False
 
+    @property
+    def current_player(self):
+        return self.players[self.current_player_index]
+
     def switch_player(self):
-        self.current_player = "X" if self.current_player == "O" else "O"
+        self.current_player_index = 1 - self.current_player_index
 
     def check_win(self):
         rows = self.board.get_rows()
@@ -19,31 +27,58 @@ class Game:
         all_lines = rows + columns + diagonals
         for line in all_lines:
             if line.count(line[0]) == 3 and line[0] != " ":
-                self.winner = line[0]
+                self.winner = self.current_player
                 return True
+            
         return False
 
     def check_draw(self):
         for row in self.board.get_rows():
             if " " in row:
                 return False
+
         return True
 
     def play_turn(self, move):
         if self.board.make_move(move, self.current_player):
             if self.check_win():
                 self.is_game_over = True
-                return f"Player {self.current_player} wins!"
+                self.current_player.record_win()
+                self.players[1 - self.current_player_index].record_loss()
+                return f"Player {self.current_player.name} wins!"
             if self.check_draw():
                 self.is_game_over = True
+                for player in self.players:
+                    player.record_draw()
                 return "It's a draw!"
             self.switch_player()
-            return f"{self.current_player}'s turn"
+
+            return f"{self.current_player.name}'s turn"
 
     def restart(self):
         self.board = Board()
-        self.current_player = "X" if self.winner is None else "O" if self.winner == "X" else "X"
-        self.winner = None
-        self.is_game_over = False
+        if self.is_game_over:
+            if self.winner:
+                self.current_player_index = 1 if self.winner == self.players[0] else 0
+            else:
+                self.current_player_index = 1 - self.starting_player_index
+        else:
+            self.current_player_index = 0
+
         return "Game restarted!"
 
+    def display_stats(self):
+        # Clear the screen (works on Windows and Unix)
+        os.system('cls' if os.name == 'nt' else 'clear')
+
+        print("Stats:")
+        for player in self.players:
+            print(f"{player.name} wins: {player.wins}")
+            print(f"{player.name} losses: {player.losses}")
+            print(f"{player.name} draws: {player.draws}")
+        print("Press enter to return...")
+
+        input()  # Wait for the user to press Enter
+
+        # Optionally clear the screen again here if you want to return to a clean state
+        os.system('cls' if os.name == 'nt' else 'clear')

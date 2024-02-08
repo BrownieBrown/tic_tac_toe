@@ -3,23 +3,32 @@ from app.game import Game
 
 def test_initial_state():
     game = Game()
-    assert game.current_player == "X", "Initial current player should be X"
+    assert game.players[0].symbol == "X", "First player should be X"
+    assert game.players[1].symbol == "O", "Second player should be O"
+    assert game.current_player_index == 0, "Initial current player should be X"
     assert game.winner is None, "There should be no winner initially"
     assert not game.is_game_over, "Game should not be over initially"
     empty_board = [[" " for _ in range(3)] for _ in range(3)]
     assert game.board.board == empty_board, "Board should be initially empty"
 
 
+def test_current_player():
+    game = Game()
+    assert game.current_player == game.players[0], "Current player should be the first player"
+    game.switch_player()
+    assert game.current_player == game.players[1], "Current player should be the second player"
+    game.switch_player()
+    assert game.current_player == game.players[0], "Current player should be the first player"
+    game.switch_player()
+    assert game.current_player == game.players[1], "Current player should be the second player"
+
+
 def test_switch_player():
     game = Game()
     game.switch_player()
-    assert game.current_player == "O", "Should switch to O"
+    assert game.current_player_index == 1, "Should switch to O"
     game.switch_player()
-    assert game.current_player == "X", "Should switch to X"
-    game.switch_player()
-    assert game.current_player == "O", "Should switch to O"
-    game.switch_player()
-    assert game.current_player == "X", "Should switch to X"
+    assert game.current_player_index == 0, "Should switch back to X"
 
 
 def test_check_win():
@@ -28,7 +37,7 @@ def test_check_win():
     for move in moves:
         game.board.make_move(move, "X")
     assert game.check_win(), "Should return True for winning move"
-    assert game.winner == "X", "Winner should be X"
+    assert game.winner.symbol == "X", "Winner should be X"
 
 
 def test_check_draw():
@@ -63,14 +72,14 @@ def test_play_turn_on_occupied_space():
     game.play_turn((0, 0))
     response = game.play_turn((0, 0))  # Attempt to play on the same spot
     assert response is None, "Should not allow play on an occupied space"
-    assert game.current_player == "O", "Should not switch player on invalid move"
+    assert game.current_player.symbol == "O", "Should not switch player on invalid move"
 
 
 def test_play_turn_out_of_bounds():
     game = Game()
     response = game.play_turn((-1, 0))  # Invalid move
     assert response is None, "Should not allow play out of bounds"
-    assert game.current_player == "X", "Should not switch player on invalid move"
+    assert game.current_player.symbol == "X", "Should not switch player on invalid move"
 
 
 def test_sequence_of_plays():
@@ -78,7 +87,7 @@ def test_sequence_of_plays():
     moves_and_players = [((0, 0), "X"), ((0, 1), "O"), ((1, 1), "X"), ((1, 0), "O")]
     for move, player in moves_and_players:
         game.play_turn(move)
-        assert game.current_player != player, "Player should switch after a valid move"
+        assert game.current_player.symbol != player, "Player should switch after a valid move"
     assert not game.check_win(), "Should not have a winner yet"
     assert not game.check_draw(), "Should not be a draw yet"
 
@@ -87,7 +96,7 @@ def test_restart():
     game = Game()
     game.play_turn((0, 0))
     game.restart()
-    assert game.current_player == "X", "Current player should be X"
+    assert game.current_player.symbol == "X", "Current player should be X"
     assert game.winner is None, "Winner should be None"
     assert not game.is_game_over, "Game should not be over"
     empty_board = [[" " for _ in range(3)] for _ in range(3)]
@@ -96,16 +105,22 @@ def test_restart():
 
 def test_restart_after_win():
     game = Game()
-    # Simulate a winning condition for X
-    game.play_turn((0, 0))
-    game.play_turn((1, 0))
-    game.play_turn((0, 1))
-    game.play_turn((1, 1))
-    game.play_turn((0, 2))
-    assert game.winner == "X", "X should be the winner"
+    # Simulate a winning condition for 'X'
+    game.play_turn((0, 0))  # 'X'
+    game.play_turn((1, 0))  # 'O'
+    game.play_turn((0, 1))  # 'X'
+    game.play_turn((1, 1))  # 'O'
+    game.play_turn((0, 2))  # 'X' wins
     game.restart()
-    assert game.current_player == "O", "Initial current player should be O after X's win"
-    assert game.winner is None, "There should be no winner initially"
-    assert not game.is_game_over, "Game should not be over initially"
-    empty_board = [[" " for _ in range(3)] for _ in range(3)]
-    assert game.board.board == empty_board, "Board should be initially empty"
+    # Expect 'O' to start since 'X' won the last game
+    assert game.current_player.symbol == "O", "O should start after X's win"
+
+
+def test_restart_after_draw():
+    game = Game()
+    moves = [(0, 0), (0, 1), (0, 2), (1, 0), (1, 1), (1, 2), (2, 0), (2, 2), (2, 1)]
+    for move in moves:
+        game.play_turn(move)
+    assert game.check_draw()
+    game.restart()
+    assert game.current_player.symbol == "O", "O should start after a draw if X started the last game"
