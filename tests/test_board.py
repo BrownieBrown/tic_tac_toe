@@ -54,6 +54,3 @@ def test_get_diagonals():
     board.make_move((2, 2), 'X')
     expected_diagonals = [['X', 'X', 'X'], [' ', 'X', ' ']]
     assert board.get_diagonals() == expected_diagonals, "Diagonals should match expected diagonals"
-
-
-
