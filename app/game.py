@@ -1,5 +1,3 @@
-import os
-
 from app.board import Board
 from app.player import Player
 
@@ -29,7 +27,7 @@ class Game:
             if line.count(line[0]) == 3 and line[0] != " ":
                 self.winner = self.current_player
                 return True
-            
+
         return False
 
     def check_draw(self):
@@ -66,19 +64,3 @@ class Game:
             self.current_player_index = 0
 
         return "Game restarted!"
-
-    def display_stats(self):
-        # Clear the screen (works on Windows and Unix)
-        os.system('cls' if os.name == 'nt' else 'clear')
-
-        print("Stats:")
-        for player in self.players:
-            print(f"{player.name} wins: {player.wins}")
-            print(f"{player.name} losses: {player.losses}")
-            print(f"{player.name} draws: {player.draws}")
-        print("Press enter to return...")
-
-        input()  # Wait for the user to press Enter
-
-        # Optionally clear the screen again here if you want to return to a clean state
-        os.system('cls' if os.name == 'nt' else 'clear')
