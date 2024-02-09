@@ -1,16 +1,19 @@
+from src.enums import BoardSymbol
+
+
 class Board:
     def __init__(self):
-        self.board = [[" " for _ in range(3)] for _ in range(3)]
+        self.board = [[BoardSymbol.EMPTY.value for _ in range(3)] for _ in range(3)]
 
     def print_board(self):
         for row in self.board:
-            print("|".join(row))
-            print("-" * 5)
+            print(BoardSymbol.VERTICAL.value.join(row))
+            print(BoardSymbol.HORIZONTAL.value * 5)
 
-    def make_move(self, move, player):
+    def make_move(self, move, symbol):
         row, col = move
         if self.is_valid_move(move):
-            self.board[row][col] = player
+            self.board[row][col] = symbol
             return True
         return False
 
@@ -20,7 +23,7 @@ class Board:
             return False
         if not (0 <= row < 3 and 0 <= col < 3):
             return False
-        if self.board[row][col] != " ":
+        if self.board[row][col] != BoardSymbol.EMPTY.value:
             return False
         return True
 
