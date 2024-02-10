@@ -8,7 +8,7 @@ line interface.
 
 - **Simple CLI Interface**: Play directly from your terminal.
 - **Two Player Mode**: Challenge a friend to a match.
-- **Score Tracking**: Keep tabs on wins and draws.
+- **Score Tracking**: Keep tabs on wins.
 - **Immediate Feedback**: Get notified of wins, draws, or invalid moves instantly.
 - **Restart Option**: Easily start a new game once the current game concludes.
 
@@ -112,7 +112,7 @@ After starting the game, you will interact with the Tic Tac Toe board via the co
 - **Score Tracking**: The game will keep track of the number of wins for each player.
   You can view the current score at any time by entering the command "p".
 - **Winning**: The game ends when a player gets three of their marks in a row, column, or diagonal. The winning player
-  will be announced, and the game will end.
+  will be announced, and the current game will end.
 
 ## Running the Tests
 
