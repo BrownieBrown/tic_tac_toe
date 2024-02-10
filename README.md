@@ -109,7 +109,7 @@ After starting the game, you will interact with the Tic Tac Toe board via the co
 - **Invalid Moves**: If you enter an invalid move (e.g., a cell that's already occupied or a non-existent cell), you
   will be prompted to try again.
 - **Draws**: If all cells are filled without a winner, the game ends in a draw.
-- **Score Tracking**: The game will keep track of the number of wins for each player, as well as the number of draws.
+- **Score Tracking**: The game will keep track of the number of wins for each player.
   You can view the current score at any time by entering the command "p".
 - **Winning**: The game ends when a player gets three of their marks in a row, column, or diagonal. The winning player
   will be announced, and the game will end.
